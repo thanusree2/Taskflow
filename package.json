@@ -1,0 +1,15 @@
+{
+  "name": "taskflow",
+  "version": "1.0.0",
+  "description": "Team Task Manager - Full Stack App",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "install-deps": "cd backend && npm install",
+    "setup": "cd backend && npm install && node -e \"require('./db/database').initDB()\"",
+    "dev": "cd backend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

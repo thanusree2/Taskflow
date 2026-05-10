@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow — Team Task Manager</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>⚡</text></svg>">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ AUTH SCREEN ═══ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">⚡ TaskFlow</div>
+    <div class="auth-subtitle">Role-based team task management</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-form="login-form">Sign In</button>
+      <button class="auth-tab" data-form="signup-form">Sign Up</button>
+    </div>
+
+    <!-- Login -->
+    <div id="login-form" class="auth-form">
+      <div id="login-alert" class="alert"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-login">Sign In</button>
+      <div style="margin-top:16px;color:var(--text2);font-size:12px;text-align:center">
+        Demo: <strong>admin@demo.com</strong> / <strong>password123</strong>
+      </div>
+    </div>
+
+    <!-- Signup -->
+    <div id="signup-form" class="auth-form" style="display:none">
+      <div id="signup-alert" class="alert"></div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Jane Smith">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="signup-role">
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-signup">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MAIN APP ═══ -->
+<div id="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">⚡ TaskFlow</div>
+    <nav class="topbar-nav">
+      <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+      <button class="nav-btn" data-page="projects">Projects</button>
+      <button class="nav-btn" data-page="my-tasks">My Tasks</button>
+    </nav>
+    <div class="topbar-user">
+      <span class="user-name" id="user-display-name"></span>
+      <span class="user-badge" id="user-role-badge">admin</span>
+      <button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ── DASHBOARD PAGE ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle">Your team's progress at a glance</div>
+        </div>
+      </div>
+      <div class="stats-grid" id="dash-stats">
+        <div class="loading"><div class="spinner"></div> Loading...</div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">My Open Tasks</div>
+          </div>
+          <div id="dash-my-tasks"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Projects Overview</div>
+          </div>
+          <div id="dash-projects"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROJECTS PAGE ── -->
+    <div class="page" id="page-projects">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Projects</div>
+          <div class="page-subtitle">All your team projects</div>
+        </div>
+        <button class="btn btn-primary" id="btn-create-project">+ New Project</button>
+      </div>
+      <div id="project-alert" class="alert"></div>
+      <div class="projects-grid" id="projects-grid">
+        <div class="loading"><div class="spinner"></div> Loading...</div>
+      </div>
+    </div>
+
+    <!-- ── PROJECT DETAIL PAGE ── -->
+    <div class="page" id="page-project-detail">
+      <div id="project-detail-content">
+        <div class="loading"><div class="spinner"></div> Loading...</div>
+      </div>
+    </div>
+
+    <!-- ── MY TASKS PAGE ── -->
+    <div class="page" id="page-my-tasks">
+      <div class="page-header">
+        <div>
+          <div class="page-title">My Tasks</div>
+          <div class="page-subtitle">Tasks assigned to you across all projects</div>
+        </div>
+      </div>
+      <div id="my-tasks-content">
+        <div class="loading"><div class="spinner"></div> Loading...</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════════ MODALS ═══ -->
+
+<!-- Create/Edit Project Modal -->
+<div class="modal-overlay" id="modal-project">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Project</div>
+      <button class="modal-close" id="close-modal-project">✕</button>
+    </div>
+    <div id="project-modal-alert" class="alert"></div>
+    <div class="form-group">
+      <label>Project Name *</label>
+      <input type="text" id="proj-name" placeholder="e.g. Marketing Campaign Q2">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="proj-desc" placeholder="What is this project about?"></textarea>
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-save-project">Create Project</button>
+  </div>
+</div>
+
+<!-- Create/Edit Task Modal -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="task-modal-title">Create Task</div>
+      <button class="modal-close" id="close-modal-task">✕</button>
+    </div>
+    <div id="task-alert" class="alert"></div>
+    <input type="hidden" id="task-id">
+    <div class="form-group">
+      <label>Title *</label>
+      <input type="text" id="task-title" placeholder="What needs to be done?">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="task-description" placeholder="Additional details..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Status</label>
+        <select id="task-status">
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Priority</label>
+        <select id="task-priority">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Assign To</label>
+        <select id="task-assignee">
+          <option value="">Unassigned</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Due Date</label>
+        <input type="date" id="task-due-date">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-save-task">Save Task</button>
+  </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Team Member</div>
+      <button class="modal-close" id="close-modal-member">✕</button>
+    </div>
+    <div id="member-alert" class="alert"></div>
+    <div class="form-group">
+      <label>Select User</label>
+      <select id="member-user-select">
+        <option value="">Loading users...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Project Role</label>
+      <select id="member-role">
+        <option value="member">Member</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-save-member">Add Member</button>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
