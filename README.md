@@ -4,7 +4,7 @@ A full-stack web application for managing team projects and tasks with role-base
 
 **Live Demo:** [Your Railway URL here]  
 **Demo Video:** [Your Loom/YouTube link here]  
-**GitHub Repo:** [Your GitHub URL here]
+**GitHub Repo:** https://github.com/thanusree2/Taskflow
 
 ---
 
